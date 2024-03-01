@@ -1,0 +1,2 @@
+If you are not sure about some technique details, look up at https://developers.home-assistant.io/docs/core/entity
+

@@ -1,0 +1,45 @@
+An alarm control panel entity controls an alarm. Derive a platform entity from homeassistant.components.alarm_control_panel.AlarmControlPanelEntity.
+
+#properties
+Properties should always only return information from memory and not do I/O (like network requests). Implement update() or async_update() to fetch data.
+
+Name	Type	Default	Description
+state	str | None	Required	One of the states listed in the states.
+code_arm_required	bool	True	Whether the code is required for arm actions.
+code_format	CodeFormat | None	None	One of the states listed in the code formats section.
+changed_by	str | None	None	Last change triggered by.
+
+#states
+Value	Description
+None	Unknown state.
+disarmed	The alarm is disarmed (off).
+armed_home	The alarm is armed in home mode.
+armed_away	The alarm is armed in away mode.
+armed_night	The alarm is armed in night mode.
+armed_vacation	The alarm is armed in vacation mode.
+armed_custom_bypass 	The alarm is armed in bypass mode.
+pending	The alarm is pending (towards triggered).
+arming	The alarm is arming.
+disarming	The alarm is disarming.
+triggered	The alarm is triggered.
+
+#supported features
+Supported features are defined by using values in the AlarmControlPanelEntityFeature enum and are combined using the bitwise or (|) operator.
+
+Constant	Description
+AlarmControlPanelEntityFeature.ARM_AWAY	The alarm supports arming in away mode.
+AlarmControlPanelEntityFeature.ARM_CUSTOM_BYPASS	The alarm supports arming with a bypass.
+AlarmControlPanelEntityFeature.ARM_HOME	The alarm supports arming in home mode.
+AlarmControlPanelEntityFeature.ARM_NIGHT	The alarm supports arming in night mode.
+AlarmControlPanelEntityFeature.ARM_VACATION	The alarm supports arming in vacation mode.
+AlarmControlPanelEntityFeature.TRIGGER	The alarm can be triggered remotely.
+
+#Code Formats
+Supported code formats are defined by using values in the CodeFormat enum.
+
+Value	Description
+None	No code required.
+CodeFormat.NUMBER	Code is a number (Shows ten-key pad on frontend).
+CodeFormat.TEXT	Code is a string.
+
+#Methods code example are provided in subfolders of Alarm Control Panel

@@ -1,0 +1,24 @@
+Events are signals that are emitted when something happens, for example, when a user presses a physical button like a doorbell or when a button on a remote control is pressed. The event entity captures these events in the physical world and makes them available in Home Assistant as an entity.
+
+The event entity is stateless, meaning you don't have to maintain a state. Instead, you can trigger an event when something in the physical world happens. Home Assistant will keep track of the last event that was emitted and will show that as the current state of the entity.
+
+The main state of the entity is the timestamp of when the last event was emitted, additionally the type of the event and optionally extra state data that was provided with the event are also kept track of.
+
+An event entity is derived from the homeassistant.components.event.EventEntity.
+
+#Properties
+TIP
+Properties should always only return information from memory and not do I/O (like network requests). Implement update() or async_update() to fetch data.
+
+Name	Type	Default	Description
+event_types	list[str]	Required	A list of possible event types this entity can fire.
+
+Other properties that are common to all entities such as device_class, icon, name etc are also applicable.
+
+#Available device classes
+Optionally specifies what type of entity it is.
+
+Constant	Description
+EventDeviceClass.BUTTON	A button of a remote control has been pressed.
+EventDeviceClass.DOORBELL	Specifically for buttons that are used as a doorbell.
+EventDeviceClass.MOTION	For motion events detected by a motion sensor.

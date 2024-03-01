@@ -1,0 +1,3 @@
+The Air Quality entity is deprecated and should not be used. Instead, use separate sensors for these measurements.
+
+Integrations that still rely on the Air Quality Entity should be migrated.

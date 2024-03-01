@@ -1,0 +1,154 @@
+INCOMPLETE
+This entry is incomplete. Contribution welcome.
+
+A media player entity controls a media player. Derive a platform entity from homeassistant.components.media_player.MediaPlayerEntity.
+
+#Properties
+TIP
+Properties should always only return information from memory and not do I/O (like network requests). Implement update() or async_update() to fetch data.
+
+Name	Type	Default	Description
+app_id	str | None	None	ID of the current running app.
+app_name	str | None	None	Name of the current running app.
+device_class	MediaPlayerDeviceClass | None	None	Type of media player.
+group_members	list[str] | None	None	A dynamic list of player entities which are currently grouped together for synchronous playback. If the platform has a concept of defining a group leader, the leader should be the first element in that list.
+is_volume_muted	bool | None	None	True if if volume is currently muted.
+media_album_artist	str | None	None	Album artist of current playing media, music track only.
+media_album_name	str | None	None	Album name of current playing media, music track only.
+media_artist	str | None	None	Artist of current playing media, music track only.
+media_channel	str | None	None	Channel currently playing.
+media_content_id	str | None	None	Content ID of current playing media.
+media_content_type	MediaType | str | None	None	Content type of current playing media.
+media_duration	int | None	None	Duration of current playing media in seconds.
+media_episode	str | None	None	Episode of current playing media, TV show only.
+media_image_hash	str | None	None	Hash of media image, defaults to SHA256 of media_image_url if media_image_url is not None.
+media_image_remotely_accessible	bool | None	False	True if property media_image_url is accessible outside of the home network.
+media_image_url	str | None	None	Image URL of current playing media.
+media_playlist	str | None	None	Title of Playlist currently playing.
+media_position	int | None	None	Position of current playing media in seconds.
+media_position_updated_at	datetime | None	None	Timestamp of when _attr_media_position was last updated. The timestamp should be set by calling homeassistant.util.dt.utcnow().
+media_season	str | None	None	Season of current playing media, TV show only.
+media_series_title	str | None	None	Title of series of current playing media, TV show only.
+media_title	str | None	None	Title of current playing media.
+media_track	int | None	None	Track number of current playing media, music track only.
+repeat	RepeatMode | str | None	None	Current repeat mode.
+shuffle	bool | None	None	True if shuffle is enabled.
+sound_mode	str | None	None	The current sound mode of the media player.
+sound_mode_list	list[str] | None	None	Dynamic list of available sound modes.
+source	str | None	None	The currently selected input source for the media player.
+source_list	list[str] | None	None	The list of possible input sources for the media player. (This list should contain human readable names, suitable for frontend display).
+state	MediaPlayerState | None	None	State of the media player.
+volume_level	float | None	None	Volume level of the media player in the range (0..1).
+volume_step	float | None	0.1	Volume step to use for the volume_up and volume_down services.
+
+#Supported Features
+Supported features are defined by using values in the MediaPlayerEntityFeature enum and are combined using the bitwise or (|) operator.
+
+Value	Description
+BROWSE_MEDIA	Entity allows browsing media.
+CLEAR_PLAYLIST	Entity allows clearing the active playlist.
+GROUPING	Entity can be grouped with other players for synchronous playback.
+MEDIA_ANNOUNCE	Entity supports the play_media service's announce parameter.
+MEDIA_ENQUEUE	Entity supports the play_media service's enqueue parameter.
+NEXT_TRACK	Entity allows skipping to the next media track.
+PAUSE	Entity allows pausing the playback of media.
+PLAY	Entity allows playing/resuming playback of media.
+PLAY_MEDIA	Entity allows playing media sources.
+PREVIOUS_TRACK	Entity allows returning back to a previous media track.
+REPEAT_SET	Entity allows setting repeat.
+SEEK	Entity allows seeking position during playback of media.
+SELECT_SOUND_MODE	Entity allows selecting a sound mode.
+SELECT_SOURCE	Entity allows selecting a source/input.
+SHUFFLE_SET	Entity allows shuffling the active playlist.
+STOP	Entity allows stopping the playback of media.
+TURN_OFF	Entity is able to be turned off.
+TURN_ON	Entity is able to be turned on.
+VOLUME_MUTE	Entity volume can be muted.
+VOLUME_SET	Entity volume can be set to specific levels.
+VOLUME_STEP	Entity volume can be adjusted up and down.
+
+#States
+The state of a media player is defined by using values in the MediaPlayerState enum, and can take the following possible values.
+
+Value	Description
+OFF	Entity is turned off and is not accepting commands until turned on.
+ON	Entity is turned on, but no details on its state is currently known.
+IDLE	Entity is turned on and accepting commands, but currently not playing any media. Possibly at some idle home screen.
+PLAYING	Entity is currently playing media.
+PAUSED	Entity has an active media and is currently paused
+STANDBY	Entity is in a low power state, accepting commands.
+BUFFERING	Entity is preparing to start playback of some media
+
+#Mediatype
+Required. Returns one of the values from the MediaType enum that matches the mediatype
+
+CONST
+MediaType.MUSIC
+MediaType.TVSHOW
+MediaType.MOVIE
+MediaType.VIDEO
+MediaType.EPISODE
+MediaType.CHANNEL
+MediaType.PLAYLIST
+MediaType.IMAGE
+MediaType.URL
+MediaType.GAME
+MediaType.APP
+class MyMediaPlayer(MediaPlayerEntity):
+    # Implement the following method.
+
+    @property
+    def media_content_type(self):
+    """Content type of current playing media."""
+
+INFO
+Using the integration name as the media_content_type is also acceptable within the play_media service if the integration provides handling which does not map to the defined constants.
+
+#Available device classes
+Optional. What type of media device is this. It will possibly map to google device types.
+
+Value	Description
+tv	Device is a television type device.
+speaker	Device is speakers or stereo type device.
+receiver	Device is audio video receiver type device taking audio and outputting to speakers and video to some display.
+
+#Proxy album art for media browser
+Optional. If your media player is only accessible from the internal network, it will need to proxy the album art via Home Assistant to be able to work while away from home or through a mobile app.
+
+To proxy an image via Home Assistant, set the thumbnail property of a BrowseMedia item to a url generated by the self.get_browse_image_url(media_content_type, media_content_id, media_image_id=None) method. The browser will then fetch this url, which will result in a call to async_get_browse_image(media_content_type, media_content_id, media_image_id=None).
+
+INFO
+Only use a proxy for the thumbnail if the web request originated from outside the network. You can test this with is_local_request(hass) imported from homeassistant.helpers.network.
+
+In async_get_browse_image, use self._async_fetch_image(url) to fetch the image from the local network. Do not use self._async_fetch_image_from_cache(url) which should only be used to for the currently playing artwork.
+
+INFO
+Do not pass an url as media_image_id. This can allow an attacker to fetch any data from the local network.
+
+class MyMediaPlayer(MediaPlayerEntity):
+
+    # Implement the following method.
+    async def async_get_browse_image(self, media_content_type, media_content_id, media_image_id=None):
+    """Serve album art. Returns (content, content_type)."""
+    image_url = ...
+    return await self._async_fetch_image(image_url)
+
+#Grouping player entities together
+Optional. If your player has support for grouping player entities together for synchronous playback (indicated by SUPPORT_GROUPING) one join and one unjoin method needs to be defined.
+
+class MyMediaPlayer(MediaPlayerEntity):
+    # Implement one of these join methods:
+
+    def join_players(self, group_members):
+        """Join `group_members` as a player group with the current player."""
+
+    async def async_join_players(self, group_members):
+        """Join `group_members` as a player group with the current player."""
+
+    # Implement one of these unjoin methods:
+
+    def unjoin_player(self):
+        """Remove this player from any group."""
+
+    async def async_unjoin_player(self):
+        """Remove this player from any group."""

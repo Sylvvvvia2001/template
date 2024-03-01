@@ -1,0 +1,105 @@
+A climate entity controls temperature, humidity, or fans, such as A/C systems and humidifiers. Derive a platform entity from homeassistant.components.climate.ClimateEntity
+
+#Properties
+Properties should always only return information from memory and not do I/O (like network requests). Implement update() or async_update() to fetch data.
+
+Name	Type	Default	Description
+current_humidity	int | None	None	The current humidity.
+current_temperature	float | None	None	The current temperature.
+fan_mode	str | None	Required by SUPPORT_FAN_MODE	The current fan mode.
+fan_modes	list[str] | None	Required by SUPPORT_FAN_MODE	The list of available fan modes.
+hvac_action	HVACAction | None	None	The current HVAC action (heating, cooling)
+hvac_mode	HVACMode | None	Required	The current operation (e.g. heat, cool, idle). Used to determine state.
+hvac_modes	list[HVACMode]	Required	List of available operation modes. See below.
+is_aux_heat	int | None	Required by SUPPORT_AUX_HEAT	True if an auxiliary heater is on.
+max_humidity	int	DEFAULT_MAX_HUMIDITY (value == 99)	The maximum humidity.
+max_temp	float	DEFAULT_MAX_TEMP (value == 35 °C)	The maximum temperature in temperature_unit.
+min_humidity	int	DEFAULT_MIN_HUMIDITY (value == 30)	The minimum humidity.
+min_temp	float	DEFAULT_MIN_TEMP (value == 7 °C)	The minimum temperature in temperature_unit.
+precision	float	According to temperature_unit	The precision of the temperature in the system. Defaults to tenths for TEMP_CELSIUS, whole number otherwise.
+preset_mode	str | None	Required by SUPPORT_PRESET_MODE	The current active preset.
+preset_modes	list[str] | None	Required by SUPPORT_PRESET_MODE	The available presets.
+swing_mode	str | None	Required by SUPPORT_SWING_MODE	The swing setting.
+swing_modes	list[str] | None	Required by SUPPORT_SWING_MODE	Returns the list of available swing modes.
+target_humidity	int | None	None	The target humidity the device is trying to reach.
+target_temperature	float | None	None	The temperature currently set to be reached.
+target_temperature_high	float | None	Required by TARGET_TEMPERATURE_RANGE	The upper bound target temperature
+target_temperature_low	float | None	Required by TARGET_TEMPERATURE_RANGE	The lower bound target temperature
+target_temperature_step	float | None	None	The supported step size a target temperature can be increased or decreased
+temperature_unit	str	Required	The unit of temperature measurement for the system (TEMP_CELSIUS or TEMP_FAHRENHEIT).
+
+#HAVC modes
+You are only allowed to use the built-in HVAC modes, provided by the HVACMode enum. If you want another mode, add a preset instead.
+
+Name	Description
+HVACMode.OFF	The device is turned off.
+HVACMode.HEAT	The device is set to heat to a target temperature.
+HVACMode.COOL	The device is set to cool to a target temperature.
+HVACMode.HEAT_COOL	The device is set to heat/cool to a target temperature range.
+HVACMode.AUTO	The device is set to a schedule, learned behavior, AI.
+HVACMode.DRY	The device is set to dry/humidity mode.
+HVACMode.FAN_ONLY	The device only has the fan on. No heating or cooling taking place.
+
+#HVAC Action
+The HVAC action describes the current action. This is different from the mode, because if a device is set to heat, and the target temperature is already achieved, the device will not be actively heating anymore. It is only allowed to use the built-in HVAC actions, provided by the HVACAction enum.
+
+Name	Description
+HVACAction.OFF	Device is turned off.
+HVACAction.PREHEATING	Device is preheating.
+HVACAction.HEATING	Device is heating.
+HVACAction.COOLING	Device is cooling.
+HVACAction.DRYING	Device is drying.
+HVACAction.FAN	Device has fan on.
+HVACAction.IDLE	Device is idle.
+
+#Presets
+A device can have different presets that it might want to show to the user. Common presets are "Away" or "Eco". There are a couple of built-in presets that will offer translations, but you're also allowed to add custom presets.
+
+Name	Description
+NONE	No preset is active
+ECO	Device is running an energy-saving mode
+AWAY	Device is in away mode
+BOOST	Device turn all valve full up
+COMFORT	Device is in comfort mode
+HOME	Device is in home mode
+SLEEP	Device is prepared for sleep
+ACTIVITY	Device is reacting to activity (e.g. movement sensors)
+
+#Fan modes
+A device's fan can have different states. There are a couple of built-in fan modes, but you're also allowed to use custom fan modes.
+
+Name
+FAN_ON
+FAN_OFF
+FAN_AUTO
+FAN_LOW
+FAN_MEDIUM
+FAN_HIGH
+FAN_MIDDLE
+FAN_FOCUS
+FAN_DIFFUSE
+
+#Swing modes
+The device fan can have different swing modes that it wants the user to know about/control.
+
+Name	Description
+SWING_OFF	The fan is not swinging.
+SWING_ON	The fan is swinging.
+SWING_VERTICAL	The fan is swinging vertical.
+SWING_HORIZONTAL	The fan is swinging horizontal.
+SWING_BOTH	The fan is swinging both horizontal and vertical.
+
+#Supported Features
+Supported features are defined by using values in the ClimateEntityFeature enum and are combined using the bitwise or (|) operator.
+
+Value	Description
+TARGET_TEMPERATURE	The device supports a target temperature.
+TARGET_TEMPERATURE_RANGE	The device supports a ranged target temperature. Used for HVAC modes heat_cool and auto
+TARGET_HUMIDITY	The device supports a target humidity.
+FAN_MODE	The device supports fan modes.
+PRESET_MODE	The device supports presets.
+SWING_MODE	The device supports swing modes.
+AUX_HEAT	The device supports auxiliary heaters.
+TURN_ON	The device supports turn on.
+TURN_OFF	The device supports turn off.
+

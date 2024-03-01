@@ -1,0 +1,40 @@
+A calendar entity is an entity that represents a set of events with a start and end date and/or time, helpful for automations. A calendar entity is derived from the homeassistant.components.calendar.CalendarEntity.
+
+Calendar integrations should be compatible with rfc5545 and may optionally support event creation following patterns established in rfc5546. Integrations that support recurring events are responsible for handling expansion of recurring events, such as in a service or API that returns the expanded set of events in the series as separate individual events.
+
+#Properties
+Properties should always only return information from memory and not do I/O (like network requests). Implement update() or async_update() to fetch data.
+
+Name	Type	Default	Description
+event	CalendarEvent | None	Required	The current or next upcoming CalendarEvent or None.
+
+#states
+A CalendarEntity state is similar to a binary sensor, reflecting whether or not there is an active event:
+
+Constant	Description
+STATE_ON	The calendar has an active event.
+STATE_OFF	The calendar does not have an active event.
+
+A calendar entity has an event property that returns either the current or next upcoming CalendarEvent which is used to determine the state. A calendar entity implementation is responsible for determining the next upcoming event, including correctly ordering events and interpreting all day events in the Home Assistant timezone. An entity should call homeassistant.util.dt.now to get the current time which has a tzinfo value set to the HomeAssistant timezone or examine homeassistant.components.util.dt.DEFAULT_TIMEZONE
+
+#Supported Features
+Supported features are defined by using values in the CalendarEntityFeature enum and are combined using the bitwise or (|) operator.
+
+Value	Description
+CREATE_EVENT	Entity implements the methods to allow creation of events.
+DELETE_EVENT	Entity implements the methods to allow deletion of events.
+UPDATE_EVENT	Entity implements the methods to allow update of events.
+
+#CalendarEvent
+A CalendarEvent represents an individual event on a calendar.
+
+Name	Type	Default	Description
+start	datetime or date	Required	The start (inclusive) of the event. Must be before end. Both start and end must be the same type. As a datetime, must have a timezone.
+end	datetime or date	Required	The end (exclusive) of the event. Must be after start. As a datetime, must have a timezone that is the same as start.
+summary	string	Required	A title or summary of the event.
+location	string	None	A geographic location of the event.
+description	string	None	A detailed description of the event.
+uid	string	None	A unique identifier for the event (required for mutations)
+recurrence_id	string	None	An optional identifier for a specific instance of a recurring event (required for mutations of recurring events)
+rrule	string	None	A recurrence rule string e.g. FREQ=DAILY
+

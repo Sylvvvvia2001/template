@@ -1,0 +1,25 @@
+The remote entity can represent two different types of devices:
+
+A physical device that sends commands.
+A virtual device in Home Assistant that sends commands to another physical device, eg a television.
+Derive entity platforms from homeassistant.components.remote.RemoteEntity
+
+#Properties
+TIP
+Properties should always only return information from memory and not do I/O (like network requests). Implement update() or async_update() to fetch data.
+
+Name	Type	Default	Description
+current_activity	str	None	Return the current active activity
+activity_list	list	None	Return the list of available activities
+
+#Activity
+An activity is a predefined activity or macro that puts the remote in a specific state. For example, a "Watch TV" activity may turn on multiple devices and change the channel to a specific channel.
+
+#Supported Features
+Supported features are defined by using values in the RemoteEntityFeature enum and are combined using the bitwise or (|) operator.
+
+Value	Description
+LEARN_COMMAND	Entity allows learning commands from devices.
+DELETE_COMMAND	Entity allows deleting commands from devices.
+ACTIVITY	Entity supports activities.
+
